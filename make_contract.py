@@ -46,10 +46,12 @@ for i in range(int(START.timestamp()), int(START.timestamp()) + (30 * 86400), 86
         symbol="ZCN9"
     ) )
 
+
 def dateformatter(o):
     if isinstance(o, (datetime.date, datetime.datetime)):
         return o.isoformat()
 
-from pprint import pprint
-print(json.dumps(records , default=dateformatter , indent=2 ) )
+
+with open('out.json', 'w') as f:
+    json.dump(records , f, default=dateformatter , indent=2 )
 
