@@ -12,7 +12,7 @@ MAX = 200
 class DayRecord(TypedDict):
     """ Container for days trading """
 
-    date: datetime.date
+    date: str   # iso
     open: float
     close: float
     high: float
@@ -21,13 +21,16 @@ class DayRecord(TypedDict):
     symbol: str
 
 
+print(f"starting at timestamp {START.timestamp()} ( {START} )")
+
+
 records: List[DayRecord] = []
 
-for i in range(int(START.timestamp()), int(START.timestamp()) + (30 * 86400), 86400):
+for date in range(int(START.timestamp()), int(START.timestamp()) + (DAYS * 86400), 86400):
     base = 0
     vals: List[float] = []
-    for _ in range(4):
-        vals.append( random.randrange(base * 100, MAX * 100) / 100 )
+    for i in range(4):
+        vals.append( random.randrange(int(base) * 100, ( (MAX - ((4 - i) * 10)) * 100)) / 100 )
         base = int(vals[len(vals) - 1])
         # print(f"base={base}")
     # print(vals)
@@ -37,7 +40,7 @@ for i in range(int(START.timestamp()), int(START.timestamp()) + (30 * 86400), 86
         _open = vals[2]
         _close = vals[1]
     records.append( DayRecord(
-        date=datetime.date.fromtimestamp(i),
+        date=datetime.date.fromtimestamp(date).isoformat(),
         open=_open,
         close=_close,
         high=_high,
@@ -47,11 +50,14 @@ for i in range(int(START.timestamp()), int(START.timestamp()) + (30 * 86400), 86
     ) )
 
 
-def dateformatter(o):
-    if isinstance(o, (datetime.date, datetime.datetime)):
-        return o.isoformat()
+
+# def dateformatter(o: datetime.date):
+#     if isinstance(o, (datetime.date)):
+#         print(f"{o} -> returning {o.isoformat()}")
+#         return o.isoformat()
+#     print("NOT FOUND.")
 
 
-with open('out.json', 'w') as f:
-    json.dump(records , f, default=dateformatter , indent=2 )
+with open('out.json', 'w', newline="\n") as f:
+    json.dump(records , f , indent=2 )
 
