@@ -1,0 +1,269 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 500,
+  "height": 300,
+  "padding": 5,
+  "config": {
+    "axisBand": {
+      "bandPosition": 1,
+      "tickExtra": true,
+      "tickOffset": 0
+    }
+  },
+  "signals": [
+    {
+      "name": "plotWidth",
+      "value": 60
+    }
+  ],
+  "data": [
+    {
+      "name": "contracts",
+      "values": [
+        {
+          "date": "2019-01-01",
+          "open": 5.1,
+          "high": 3.5,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-02",
+          "open": 25.1,
+          "high": 23.5,
+          "low": 12.4,
+          "close": 22.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-03",
+          "open": 54.1,
+          "high": 13.5,
+          "low": 41.4,
+          "close": 20.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-04",
+          "open": 5.1,
+          "high": 3.5,
+          "low": 1.4,
+          "close": 0.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-05",
+          "open": 52.1,
+          "high": 31.5,
+          "low": 11.4,
+          "close": 10.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-06",
+          "open": 52.1,
+          "high": 31.5,
+          "low": 11.4,
+          "close": 10.2,
+          "symbol": "ZCN8"
+        }
+      ]
+    }
+  ],
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "band",
+      "range": "width",
+      "round": true,
+      "domain": {
+        "data": "contracts",
+        "field": "date"
+      },
+      "padding": 0.1
+    },
+    {
+      "name": "yscale",
+      "type": "linear",
+      "range": "height",
+      "round": true,
+      "domain": {
+        "data": "contracts",
+        "fields": [
+          "open",
+          "close"
+        ]
+      },
+      "nice": true,
+      "zero": false
+    }
+  ],
+  "axes": [
+    {
+      "orient": "bottom",
+      "scale": "xscale",
+      "zindex": 1
+    },
+    {
+      "orient": "left",
+      "scale": "yscale",
+      "tickCount": 5,
+      "zindex": 1,
+      "grid": true
+    }
+  ],
+  "marks": [
+    {
+      "type": "group",
+      "from": {
+        "facet": {
+          "data": "contracts",
+          "name": "contract",
+          "groupby": "symbol"
+        }
+      },
+      "encode": {
+        "enter": {
+          "x": {
+            "scale": "xscale",
+            "field": "date",
+            "band": 0.5
+          },
+          "height": {
+            "signal": "height"
+          },
+          "width": {
+            "signal": "plotWidth"
+          }
+        }
+      },
+      "data": [
+        {
+          "name": "summary",
+          "source": "contract",
+          "transform": [
+            {
+              "type": "aggregate",
+              "fields": [
+                "value",
+                "value",
+                "value",
+                "value",
+                "value"
+              ],
+              "ops": [
+                "min",
+                "q1",
+                "median",
+                "q3",
+                "max"
+              ],
+              "as": [
+                "min",
+                "q1",
+                "median",
+                "q3",
+                "max"
+              ]
+            }
+          ]
+        }
+      ],
+      "marks": [
+        {
+          "type": "rect",
+          "from": {
+            "data": "summary"
+          },
+          "encode": {
+            "enter": {
+              "fill": {
+                "value": "green"
+              },
+              "width": {
+                "value": 1
+              }
+            },
+            "update": {
+              "x": {
+                "scale": "xscale",
+                "field": "date"
+              },
+              "y": {
+                "scale": "yscale",
+                "field": "min"
+              },
+              "y2": {
+                "scale": "yscale",
+                "field": "max"
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "from": {
+            "data": "summary"
+          },
+          "encode": {
+            "enter": {
+              "fill": {
+                "value": "red"
+              },
+              "cornerRadius": {
+                "value": 4
+              }
+            },
+            "update": {
+              "x": {
+                "scale": "xscale",
+                "field": "date"
+              },
+              "width": {
+                "signal": "plotWidth / 2"
+              },
+              "y": {
+                "scale": "yscale",
+                "field": "q1"
+              },
+              "y2": {
+                "scale": "yscale",
+                "field": "q3"
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "from": {
+            "data": "summary"
+          },
+          "encode": {
+            "enter": {
+              "fill": {
+                "value": "purple"
+              },
+              "height": {
+                "value": 2
+              }
+            },
+            "update": {
+              "x": {
+                "scale": "xscale",
+                "field": "date"
+              },
+              "width": {
+                "signal": "plotWidth / 2"
+              },
+              "y": {
+                "scale": "yscale",
+                "field": "median"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

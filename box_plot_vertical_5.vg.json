@@ -1,0 +1,250 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 900,
+  "height": 300,
+  "padding": 5,
+  "data": [
+    {
+      "name": "contract",
+      "url": "out.json",
+      "format": {
+        "parse": {
+          "date": "date"
+        }
+      }
+    },
+    {
+      "name": "highlightedPoint",
+      "source": "contract",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "hover && debug(hover.date) && hover.date === datum.date"
+        }
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "name": "plotWidth",
+      "update": "width / length(data('contract'))"
+    },
+    {
+      "name": "hover",
+      "value": null,
+      "on": [
+        {
+          "events": "@dayrect:mouseover",
+          "update": "datum"
+        },
+        {
+          "events": "@dayrect:mouseout",
+          "update": "null"
+        }
+      ]
+    },
+    {
+      "name": "chart_height"
+    }
+  ],
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "utc",
+      "range": "width",
+      "domain": {
+        "data": "contract",
+        "field": "date"
+      },
+      "padding": {
+        "signal": "plotWidth / 2"
+      }
+    },
+    {
+      "name": "yscale",
+      "type": "linear",
+      "range": "height",
+      "round": false,
+      "domain": {
+        "data": "contract",
+        "fields": [
+          "high",
+          "low"
+        ]
+      },
+      "nice": true,
+      "zero": true,
+      "clamp": true
+    }
+  ],
+  "axes": [
+    {
+      "orient": "bottom",
+      "scale": "xscale",
+      "format": "%b %d",
+      "tickCount": "day",
+      "grid": true,
+      "gridOpacity": 0.5,
+      "offset": {
+        "value": 5
+      }
+    },
+    {
+      "orient": "left",
+      "scale": "yscale",
+      "format": "$8.02f",
+      "grid": true,
+      "offset": {
+        "value": 5
+      }
+    }
+  ],
+  "marks": [
+    {
+      "type": "rect",
+      "from": {
+        "data": "contract"
+      },
+      "encode": {
+        "enter": {
+          "fill": {
+            "value": "black"
+          },
+          "width": {
+            "value": 1
+          },
+          "strokeWidth": {
+            "value": 0
+          }
+        },
+        "update": {
+          "x": {
+            "scale": "xscale",
+            "field": "date"
+          },
+          "y": {
+            "scale": "yscale",
+            "field": "high"
+          },
+          "y2": {
+            "scale": "yscale",
+            "field": "low"
+          }
+        }
+      }
+    },
+    {
+      "type": "rect",
+      "from": {
+        "data": "contract"
+      },
+      "encode": {
+        "enter": {
+          "fill": [
+            {
+              "test": "datum.open < datum.close",
+              "value": "green"
+            },
+            {
+              "value": "red"
+            }
+          ],
+          "stroke": {
+            "value": "black"
+          },
+          "strokeWidth": {
+            "value": 1.1
+          }
+        },
+        "update": {
+          "xc": {
+            "scale": "xscale",
+            "field": "date"
+          },
+          "width": {
+            "signal": "plotWidth / 1.15"
+          },
+          "y": {
+            "scale": "yscale",
+            "field": "open"
+          },
+          "y2": {
+            "scale": "yscale",
+            "field": "close"
+          }
+        },
+              "tooltip": {"signal": "datum.date"}
+      }
+    },
+    
+    {
+      "name": "dayrect",
+      "from": {
+        "data": "contract"
+      },
+      "type": "rect",
+      "encode": {
+        "update": {
+          "fill": {
+            "value": "transparent"
+          },
+          "stroke": {
+            "value": "red"
+          },
+          "strokeWidth": {
+            "value": 0
+          },
+          "xc": {
+            "field": "date",
+            "scale": "xscale"
+          },
+          "y": {
+            "value": "0",
+            "scale": "yscale"
+          },
+          "y2": {
+            "signal": "height",
+            "scale": "yscale"
+          },
+          "width": {
+            "signal": "plotWidth"
+          },
+          
+          "tooltip": {
+            "signal": "datum"
+          },
+          "cursor": { "value": "crosshair"}
+        },
+        "hover": {
+          "opacity": {"value": 0.4},
+          "fill": {"value": "white"}
+        }
+      }
+    },
+    {
+      "from": {
+        "data": "highlightedPoint"
+      },
+      "type": "rule",
+      "interactive": false,
+      "encode": {
+        "update": {
+          "x": {
+            "scale": "xscale",
+            "field": "date"
+          },
+          "y": {
+            "signal": "height",
+            "scale": "yscale"
+          },
+          "y2": {
+            "scale": "yscale",
+            "value": "0"
+          },
+          "strokeOpacity": { "value": 0.5 },
+          "stroke": { "value": "black" }
+        }
+      }
+    }
+  ]
+}

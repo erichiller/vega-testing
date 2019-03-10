@@ -1,0 +1,442 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 900,
+  "height": 300,
+  "padding": 5,
+  "config": {
+    "axisBand": {
+      "bandPosition": 1,
+      "tickExtra": true,
+      "tickOffset": 0
+    },
+    "axisX": {}
+  },
+  "signals": [
+    {
+      "name": "plotWidth",
+      "update": "width / length(data('contracts'))"
+    }
+  ],
+  "data": [
+    {
+      "name": "contracts",
+      "values": [
+        {
+          "date": "2019-01-01",
+          "open": 12.9,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-02",
+          "open": 12.9,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-03",
+          "open": 12.9,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-04",
+          "open": 12.9,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-07",
+          "open": 12.9,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-05",
+          "open": 12.9,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN7"
+        },
+        {
+          "date": "2019-01-05",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-08",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-09",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-10",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-11",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-12",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-13",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-14",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-15",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-16",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-17",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-18",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-19",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-20",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-21",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-22",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-23",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-24",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-25",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-26",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-27",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-28",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        },
+        {
+          "date": "2019-01-29",
+          "open": 40.2,
+          "high": 225.3,
+          "low": 12.4,
+          "close": 224.2,
+          "symbol": "ZCN8"
+        }
+      ],
+      "format": {
+        "parse": {
+          "date": "date"
+        }
+      }
+    }
+  ],
+  "scales": [
+    {
+      "name": "xscale",
+      "type": "utc",
+      "range": "width",
+      "domain": {
+        "data": "contracts",
+        "field": "date"
+      },
+      "padding": {
+        "signal": "plotWidth  /2"
+      }
+    },
+    {
+      "name": "yscale",
+      "type": "linear",
+      "range": "height",
+      "round": true,
+      "domain": {
+        "data": "contracts",
+        "fields": [
+          "high",
+          "low"
+        ]
+      },
+      "nice": true,
+      "zero": false
+    }
+  ],
+  "axes": [
+    {
+      "orient": "bottom",
+      "scale": "xscale",
+      "zindex": 1,
+      "formatType": "time",
+      "format": "%b %d",
+      "tickCount": "day",
+      "grid": true,
+      "gridOpacity": 0.5,
+      "offset": {
+        "value": 5
+      }
+      
+    },
+    {
+      "orient": "left",
+      "scale": "yscale",
+      "tickCount": 5,
+      "zindex": 1,
+      "grid": true
+    }
+  ],
+  "marks": [
+    {
+      "type": "symbol",
+      "from": {
+        "data": "contracts"
+      },
+      "encode": {
+        "enter": {
+          
+          "stroke": {
+            "value": "#652c90"
+          }
+        },
+        "update": {
+          "x": {
+            "scale": "xscale",
+            "field": "date"
+          },
+          "y": {
+            "signal": "height /2"
+          },
+          "strokeWidth": {
+            "value": 4
+          },
+          "size": {
+            "value": 5
+          },
+          "shape": {
+            "value": "circle"
+          }
+        }
+      }
+    },
+    {
+      "type": "group",
+      "from": {
+        "facet": {
+          "data": "contracts",
+          "name": "contract",
+          "groupby": "symbol"
+        }
+      },
+      "encode": {
+        "enter": {
+          "xc": {
+            "scale": "xscale",
+            "field": "date"
+          },
+          "width": { "signal": "plotWidth"},
+          "height": { "signal": "height" },
+          "stroke": {
+            "value": "black"
+          }
+        }
+      },
+      "marks": [
+        {
+          "type": "rect",
+          "from": {
+            "data": "contract"
+          },
+          "encode": {
+            "enter": {
+              "fill": {
+                "value": "green"
+              },
+              "width": {
+                "value": 1.3
+              }
+            },
+            "update": {
+              "x": {
+                "scale": "xscale",
+                "field": "date"
+              },
+              "y": {
+                "scale": "yscale",
+                "field": "high"
+              },
+              "y2": {
+                "scale": "yscale",
+                "field": "low"
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "from": {
+            "data": "contract"
+          },
+          "encode": {
+            "enter": {
+              "fill": {
+                "value": "#ff000011"
+              },
+              "cornerRadius": {
+                "value": 4
+              }
+            },
+            "update": {
+              "xc": {
+                "scale": "xscale",
+                "field": "date"
+              },
+              "width": {
+                "signal": "plotWidth / 2"
+              },
+              
+            "offset": {
+              "signal": "plotWidth / 2"
+            },
+              "y": {
+                "scale": "yscale",
+                "field": "open"
+              },
+              "y2": {
+                "scale": "yscale",
+                "field": "close"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
