@@ -1,0 +1,785 @@
+{
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "width": 900,
+  "height": 500,
+  "padding": {
+    "left": 5,
+    "right": 50,
+    "top": 5,
+    "bottom": 5
+  },
+  "data": [
+    {
+      "name": "contract",
+      "url": "https://raw.githubusercontent.com/erichiller/vega-testing/master/out.json",
+      "format": {
+        "parse": {
+          "date": "date"
+        }
+      }
+    },
+    {
+      "name": "visibleDays",
+      "source": "contract",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "!isArray(detailDomain) || datum.date > detailDomain[0] && datum.date < detailDomain[1] "
+        },
+        {
+          "type": "extent",
+          "field": "date",
+          "signal": "dateRange"
+        }
+      ]
+    },
+    {
+      "name": "highlightedDay",
+      "source": "visibleDays",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "hover && hover.date === datum.date"
+        }
+      ]
+    },
+    {
+      "name": "visiblePoints",
+      "source": "visibleDays",
+      "transform": [
+        {
+          "type": "fold",
+          "fields": [
+            "high",
+            "low",
+            "open",
+            "close"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "highlightedPoint",
+      "source": "visiblePoints",
+      "transform": [
+        {
+          "type": "filter",
+          "expr": "hover && hover.date === datum.date && hover.value && hover.value === datum.value"
+        }
+      ]
+    }
+  ],
+  "signals": [
+    {
+      "name": "plotWidth",
+      "update": "width / length(data('visibleDays'))"
+    },
+    {
+      "name": "titleHeight",
+      "update": "height * (1/12)"
+    },
+    {
+      "name": "detailHeight",
+      "update": "height * (8/12)"
+    },
+    {
+      "name": "overviewHeight",
+      "update": "height * (2/12)"
+    },
+    {
+      "name": "hover",
+      "value": null,
+      "on": [
+        {
+          "events": "@dayrect:mouseover",
+          "update": "datum"
+        },
+        {
+          "events": "@dayrect:mouseout",
+          "update": "null"
+        },
+        {
+          "events": "@pointsOnLine:mouseover",
+          "update": "datum"
+        },
+        {
+          "events": "@pointsOnLine:mouseout",
+          "update": "null"
+        }
+      ]
+    },
+    {
+      "name": "detailDomain"
+    }
+  ],
+  "marks": [
+    {
+      "type": "group",
+      "name": "titleGroup",
+      "encode": {
+        "enter": {
+          "height": {
+            "signal": "titleHeight"
+          },
+          "width": {
+            "signal": "width"
+          }
+        }
+      },
+      "title": {
+        "encode": {
+          "update": {
+            "text": {
+              "signal": "'Contract History ' + data('contract')[0].symbol + ' (' + utcFormat(dateRange[0], '%Y %b %d') + ' to ' + utcFormat(dateRange[1], '%Y %b %d') + ')'"
+            }
+          }
+        },
+        "fontSize": 14
+      }
+    },
+    {
+      "type": "group",
+      "name": "detail",
+      "encode": {
+        "enter": {
+          "height": {
+            "signal": "detailHeight"
+          },
+          "width": {
+            "signal": "width"
+          },
+          "y": {
+            "signal": "titleHeight"
+          }
+        }
+      },
+      "scales": [
+        {
+          "name": "xDetail",
+          "type": "utc",
+          "range": "width",
+          "domain": {
+            "data": "contract",
+            "field": "date"
+          },
+          "domainRaw": {
+            "signal": "detailDomain"
+          },
+          "padding": {
+            "signal": "plotWidth / 2"
+          }
+        },
+        {
+          "name": "yDetail",
+          "type": "linear",
+          "range": {
+            "signal": "[ 0, detailHeight ]"
+          },
+          "reverse": true,
+          "clamp": true,
+          "domain": {
+            "data": "contract",
+            "fields": [
+              "high",
+              "low"
+            ]
+          },
+          "nice": true,
+          "zero": true
+        },
+        {
+          "name": "volumeWidth",
+          "type": "linear",
+          "range": {
+            "signal": " [ 0, plotWidth ]"
+          },
+          "domain": {
+            "data": "contract",
+            "field": "volume"
+          }
+        }
+      ],
+      "axes": [
+        {
+          "orient": "bottom",
+          "scale": "xDetail",
+          "grid": true,
+          "gridOpacity": 0.5,
+          "offset": {
+            "value": 5
+          }
+        },
+        {
+          "orient": "left",
+          "scale": "yDetail",
+          "format": "$8.02f",
+          "grid": true,
+          "offset": {
+            "value": 5
+          }
+        }
+      ],
+      "marks": [
+        {
+          "type": "rect",
+          "$description": "top of box to higher of open - close",
+          "from": {
+            "data": "visibleDays"
+          },
+          "encode": {
+            "enter": {
+              "fill": [
+                {
+                  "test": "datum.open < datum.close",
+                  "value": "green"
+                },
+                {
+                  "value": "red"
+                }
+              ],
+              "width": {
+                "value": 1
+              },
+              "strokeWidth": {
+                "value": 0
+              }
+            },
+            "update": {
+              "x": {
+                "scale": "xDetail",
+                "field": "date"
+              },
+              "y": {
+                "scale": "yDetail",
+                "field": "high"
+              },
+              "y2": {
+                "scale": "yDetail",
+                "signal": "datum.open > datum.close ? datum.open : datum.close"
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "$description": "bottom to box low to lesser of open - close",
+          "from": {
+            "data": "visibleDays"
+          },
+          "encode": {
+            "enter": {
+              "fill": [
+                {
+                  "test": "datum.open < datum.close",
+                  "value": "green"
+                },
+                {
+                  "value": "red"
+                }
+              ],
+              "width": {
+                "value": 1
+              },
+              "strokeWidth": {
+                "value": 0
+              }
+            },
+            "update": {
+              "x": {
+                "scale": "xDetail",
+                "field": "date"
+              },
+              "y": {
+                "scale": "yDetail",
+                "field": "low"
+              },
+              "y2": {
+                "scale": "yDetail",
+                "signal": "datum.open < datum.close ? datum.open : datum.close"
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "$description": "Main box of open - close",
+          "from": {
+            "data": "visibleDays"
+          },
+          "encode": {
+            "enter": {
+              "fill": [
+                {
+                  "test": "datum.open < datum.close",
+                  "value": "green"
+                },
+                {
+                  "value": "red"
+                }
+              ],
+              "opacity": [
+                {
+                  "test": "datum.open < datum.close",
+                  "value": 0.4
+                },
+                {
+                  "value": 0.9
+                }
+              ],
+              "stroke": {
+                "value": "black"
+              },
+              "strokeWidth": {
+                "value": 0.4
+              }
+            },
+            "update": {
+              "xc": {
+                "scale": "xDetail",
+                "field": "date"
+              },
+              "width": {
+                "scale": "volumeWidth",
+                "field": "volume"
+              },
+              "y": {
+                "scale": "yDetail",
+                "field": "open"
+              },
+              "y2": {
+                "scale": "yDetail",
+                "field": "close"
+              }
+            }
+          }
+        },
+        {
+          "name": "dayrect",
+          "type": "rect",
+          "from": {
+            "data": "contract"
+          },
+          "encode": {
+            "update": {
+              "fill": {
+                "signal": "hover && hover.date === datum.date ? 'white' : 'transparent'"
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "strokeWidth": {
+                "value": 0
+              },
+              "xc": {
+                "field": "date",
+                "scale": "xDetail"
+              },
+              "y": {
+                "value": "0",
+                "scale": "yDetail"
+              },
+              "y2": {
+                "signal": "height",
+                "scale": "yDetail"
+              },
+              "width": {
+                "signal": "plotWidth"
+              },
+              "tooltip": {
+                "signal": "{title: timeFormat(datum.date, '%Y %b %d'), 'Open': datum.open, 'High': datum.high, 'Low': datum.low, 'Close': datum.close, 'Volume': datum.volume}"
+              },
+              "cursor": {
+                "value": "crosshair"
+              },
+              "opacity": {
+                "signal": "hover && hover.date === datum.date ? 0.4 : 1"
+              }
+            }
+          }
+        },
+        {
+          "name": "dayLine",
+          "from": {
+            "data": "highlightedDay"
+          },
+          "type": "rule",
+          "interactive": false,
+          "encode": {
+            "update": {
+              "x": {
+                "scale": "xDetail",
+                "field": "date"
+              },
+              "y": {
+                "signal": "height",
+                "scale": "yDetail"
+              },
+              "y2": {
+                "scale": "yDetail",
+                "value": "0"
+              },
+              "strokeOpacity": {
+                "value": 0.5
+              },
+              "stroke": {
+                "value": "black"
+              }
+            }
+          }
+        },
+        {
+          "name": "pointsOnLine",
+          "from": {
+            "data": "visiblePoints"
+          },
+          "type": "symbol",
+          "encode": {
+            "update": {
+              "fill": {
+                "value": "transparent"
+              },
+              "size": {
+                "value": 100
+              },
+              "stroke": {
+                "value": "transparent"
+              },
+              "strokeWidth": {
+                "value": 0.5
+              },
+              "x": {
+                "field": "date",
+                "scale": "xDetail"
+              },
+              "y": {
+                "field": "value",
+                "scale": "yDetail"
+              },
+              "cursor": {
+                "value": "crosshair"
+              },
+              "tooltip": {
+                "signal": "{title: timeFormat(datum.date, '%Y %b %d'), 'High': datum.high, 'Low': datum.low, 'Close': datum.close, 'Volume': datum.volume}"
+              }
+            }
+          }
+        },
+        {
+          "name": "pointHline",
+          "from": {
+            "data": "highlightedPoint"
+          },
+          "type": "rule",
+          "encode": {
+            "update": {
+              "stroke": {
+                "value": "#aaa"
+              },
+              "size": {
+                "value": 300
+              },
+              "strokeWidth": {
+                "value": 0.5
+              },
+              "x": {
+                "field": "0",
+                "scale": "xDetail"
+              },
+              "x2": {
+                "signal": "width"
+              },
+              "y": {
+                "field": "value",
+                "scale": "yDetail"
+              },
+              "cursor": {
+                "value": "crosshair"
+              }
+            }
+          }
+        },
+        {
+          "name": "pointKey",
+          "from": {
+            "data": "highlightedPoint"
+          },
+          "type": "text",
+          "encode": {
+            "update": {
+              "text": {
+                "signal": "upper(slice(datum.key, 0, 1)) + slice(datum.key, 1)"
+              },
+              "x": {
+                "signal": "width"
+              },
+              "y": {
+                "field": "value",
+                "scale": "yDetail"
+              },
+              "dy": {
+                "value": 3
+              },
+              "fill": {
+                "value": "#aaa"
+              },
+              "fontSize": {
+                "value": 12
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "group",
+      "name": "overview",
+      "encode": {
+        "enter": {
+          "x": {
+            "value": 0
+          },
+          "y": {
+            "signal": " height - overviewHeight"
+          },
+          "height": {
+            "signal": "overviewHeight"
+          },
+          "width": {
+            "signal": "width"
+          },
+          "fill": {
+            "value": "transparent"
+          }
+        }
+      },
+      "signals": [
+        {
+          "name": "brush",
+          "value": 0,
+          "on": [
+            {
+              "events": "@overview:mousedown",
+              "update": "[x(), x()]"
+            },
+            {
+              "events": "[@overview:mousedown, window:mouseup] > window:mousemove!",
+              "update": "[brush[0], clamp(x(), 0, width)]"
+            },
+            {
+              "events": {
+                "signal": "delta"
+              },
+              "update": "clampRange([anchor[0] + delta, anchor[1] + delta], 0, width)"
+            }
+          ]
+        },
+        {
+          "name": "anchor",
+          "value": null,
+          "on": [
+            {
+              "events": "@brush:mousedown",
+              "update": "slice(brush)"
+            }
+          ]
+        },
+        {
+          "name": "xdown",
+          "value": 0,
+          "on": [
+            {
+              "events": "@brush:mousedown",
+              "update": "x()"
+            }
+          ]
+        },
+        {
+          "name": "delta",
+          "value": 0,
+          "on": [
+            {
+              "events": "[@brush:mousedown, window:mouseup] > window:mousemove!",
+              "update": "x() - xdown"
+            }
+          ]
+        },
+        {
+          "name": "detailDomain",
+          "push": "outer",
+          "on": [
+            {
+              "events": {
+                "signal": "brush"
+              },
+              "update": "span(brush) ? invert('xOverview', brush) : null"
+            }
+          ]
+        }
+      ],
+      "scales": [
+        {
+          "name": "xOverview",
+          "type": "time",
+          "range": "width",
+          "domain": {
+            "data": "contract",
+            "field": "date"
+          }
+        },
+        {
+          "name": "yOverview",
+          "type": "linear",
+          "range": {
+            "signal": "[  height * (1/6) , 0 ]"
+          },
+          "domain": {
+            "data": "contract",
+            "fields": [
+              "high",
+              "low"
+            ]
+          },
+          "nice": true,
+          "zero": true
+        }
+      ],
+      "axes": [
+        {
+          "orient": "bottom",
+          "scale": "xOverview",
+          "offset": {
+            "value": 5
+          },
+          "title": {
+            "text": {
+              "value":  "gello"
+            }
+          }
+        },
+        {
+          "orient": "left",
+          "scale": "yOverview",
+          "format": "$8.02f",
+          "tickCount": 2,
+          "grid": true,
+          "offset": {
+            "value": 5
+          }
+        }
+      ],
+      "marks": [
+        {
+          "name": "overviewArea",
+          "type": "area",
+          "interactive": false,
+          "from": {
+            "data": "contract"
+          },
+          "encode": {
+            "update": {
+              "x": {
+                "scale": "xOverview",
+                "field": "date"
+              },
+              "y": {
+                "scale": "yOverview",
+                "field": "close"
+              },
+              "y2": {
+                "scale": "yOverview",
+                "value": 0
+              },
+              "fill": {
+                "value": "steelblue"
+              }
+            }
+          }
+        },
+        {
+          "type": "rect",
+          "name": "brush",
+          "$description": "highlightedOverviewRange",
+          "encode": {
+            "enter": {
+              "y": {
+                "value": 0
+              },
+              "height": {
+                "signal": "overviewHeight"
+              },
+              "fillOpacity": {
+                "value": 0.3
+              },
+              "fill": {
+                "value": "transparent"
+              }
+            },
+            "update": {
+              "x": {
+                "signal": "brush[0]"
+              },
+              "x2": {
+                "signal": "brush[1]"
+              },
+              "fill": {
+                "value": "#ccc"
+              }
+            }
+          }
+        },
+        {
+          "name": "highlightedOverviewRangeStart",
+          "type": "rect",
+          "interactive": false,
+          "encode": {
+            "enter": {
+              "y": {
+                "value": 0
+              },
+              "height": {
+                "signal": "overviewHeight"
+              },
+              "width": {
+                "value": 1
+              }
+            },
+            "update": {
+              "x": {
+                "signal": "brush[0]"
+              },
+              "fill": {
+                "signal": " isArray(brush) ? 'firebrick' : 'transparent'"
+              }
+            }
+          }
+        },
+        {
+          "name": "highlightedOverviewRangeEnd",
+          "type": "rect",
+          "interactive": false,
+          "encode": {
+            "enter": {
+              "y": {
+                "value": 0
+              },
+              "height": {
+                "signal": "overviewHeight"
+              },
+              "width": {
+                "value": 1
+              }
+            },
+            "update": {
+              "x": {
+                "signal": "brush[1]"
+              },
+              "fill": {
+                "signal": " isArray(brush) ? 'firebrick' : 'transparent'"
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

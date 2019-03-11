@@ -6,7 +6,8 @@
   "data": [
     {
       "name": "contract",
-      "url": "out.json",
+      "url": "https://raw.githubusercontent.com/erichiller/vega-testing/master/out.json",
+
       "format": {
         "parse": {
           "date": "date"
@@ -81,13 +82,23 @@
     {
       "orient": "bottom",
       "scale": "xscale",
-      "format": "%b %d",
-      "tickCount": "day",
       "grid": true,
       "gridOpacity": 0.5,
       "offset": {
         "value": 5
       }
+    },
+    {
+      "orient": "bottom",
+      "scale": "xscale",
+      "grid": true,
+      "gridOpacity": 0.5,
+      "offset": {
+        "value": 30
+      },
+      "format": "%Y",
+      "tickCount": "year",
+      "ticks": true
     },
     {
       "orient": "left",
@@ -149,11 +160,20 @@
               "value": "red"
             }
           ],
+          "opacity": [
+            {
+              "test": "datum.open < datum.close",
+              "value": 0.4
+            },
+            {
+              "value": 0.9
+            }
+          ],
           "stroke": {
             "value": "black"
           },
           "strokeWidth": {
-            "value": 1.1
+            "value": 0.4
           }
         },
         "update": {
@@ -172,8 +192,7 @@
             "scale": "yscale",
             "field": "close"
           }
-        },
-              "tooltip": {"signal": "datum.date"}
+        }
       }
     },
     
@@ -189,7 +208,7 @@
             "value": "transparent"
           },
           "stroke": {
-            "value": "red"
+            "value": "transparent"
           },
           "strokeWidth": {
             "value": 0
@@ -209,9 +228,8 @@
           "width": {
             "signal": "plotWidth"
           },
-          
           "tooltip": {
-            "signal": "datum"
+            "signal": "{title: timeFormat(datum.date, '%Y %b %d'), 'Open': datum.open, 'High': datum.high, 'Low': datum.low, 'Close': datum.close, 'Volume': datum.volume}"
           },
           "cursor": { "value": "crosshair"}
         },
