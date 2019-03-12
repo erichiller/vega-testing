@@ -130,7 +130,7 @@
         "encode": {
           "update": {
             "text": {
-              "signal": "'Contract History ' + data('contract')[0].symbol + ' (' + utcFormat(dateRange[0], '%Y %b %d') + ' to ' + utcFormat(dateRange[1], '%Y %b %d') + ')'"
+              "signal": "data('contract')[0].symbol + ' (' + utcFormat(dateRange[0], '%Y %b %d') + ' to ' + utcFormat(dateRange[1], '%Y %b %d') + ')'"
             }
           }
         },
@@ -649,11 +649,6 @@
           "scale": "xOverview",
           "offset": {
             "value": 5
-          },
-          "title": {
-            "text": {
-              "value":  "gello"
-            }
           }
         },
         {
